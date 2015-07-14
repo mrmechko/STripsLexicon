@@ -5,18 +5,20 @@ import com.github.mrmechko.swordnet.structures.SPos
 import scalaz._
 import Scalaz._
 
+import upickle._
+
 
 class TripsLexicon(val words : List[STripsWord]) {
   private val wordIndex = words.map(w => w.word -> w).groupBy(_._1).mapValues(x => x.map(_._2))
   //Map[String @@ Cat, List[STripsWord]]
   private val morphIndex = words.flatMap(w => w.morphs.map(m => m -> w)).groupBy(_._1).mapValues(v => v.map(_._2))
 
-  val entries : (String) => Map[String @@ Cat, List[STripsWord]] = (form : String) => {
+  val entries : (String) => Map[String, List[STripsWord]] = (form : String) => {
     morphIndex.filter(_._1.to == form).map(m => m._1.cat -> m._2)
   }
 
   //Return all entries for a particular form of the word
-  def morphs(word : String) : Set[String @@ Word] = {
+  def morphs(word : String) : Set[String] = {
     entries(word).values.flatMap(x => x.map(_.word)).toSet
   }
 
@@ -30,11 +32,11 @@ class TripsLexicon(val words : List[STripsWord]) {
  * base : the word classes for this morph instance
  * to : the morphological variant
  */
-case class SMorph(cat : String @@ Cat, to : String)
+case class SMorph(cat : String, to : String)
 
 case class STripsWord(
-  word : String @@ Word,
-  pos : String @@ Pos,
+  word : String,
+  pos : String,
   classes : List[SLexClass],
   morphs : List[SMorph]
 ) {
@@ -49,14 +51,14 @@ case class STripsWord(
 }
 
 case class SLexFrame(
-  desc : String @@ LexFrame,
-  example : String @@ Example
+  desc : String,
+  example : String
 )
 
 case class SLexClass(
-  words : List[String @@ Word],
-  pos : String @@ Pos,
-  ontType : String @@ OntType,
+  words : List[String],
+  pos : String,
+  ontType : String,
   frames : List[SLexFrame]
 )
 
@@ -80,16 +82,16 @@ object LexiconFromXML {
   }
 
   def parseWord(n : NodeSeq) : List[STripsWord] = {
-    val name : String @@ Word = STags[Word]((n \ "@name").text)
+    val name : String = STags[Word]((n \ "@name").text)
 
     (n \\ "POS").map(p => {
       val pos = STags[Pos]((p \ "@name").text)
       val morphs : List[SMorph] = (p \\ "MORPH").map(m => {
         SMorph(STags[Cat]((m \ "@cat").text), (m \ "@to").text)
-      }).toList.+:(SMorph(STags[Cat]("base"), Tag.unwrap(name))) //add a 'base' to everything
+      }).toList.+:(SMorph("base", name)) //add a 'base' to everything
       val classes = (p \\ "CLASS").map(c => {
-        val ot : String @@ OntType = STags[OntType]((c \ "@onttype").text)
-        val words : List[String @@ Word] = (c \ "@words").text.split(",").toList.map(STags[Word](_))
+        val ot : String = STags[OntType]((c \ "@onttype").text)
+        val words : List[String] = (c \ "@words").text.split(",").toList.map(STags[Word](_))
         val frames : List[SLexFrame] = (c \\ "FRAME").map(f => {
           SLexFrame(
             STags((f \ "@desc").text),
@@ -137,5 +139,5 @@ object spurious extends App {
 
   println(lex.get("broken"))
 
-  //lex.words.foreach(_.pickle)
+  println(write(lex.words))
 }
