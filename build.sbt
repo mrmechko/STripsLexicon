@@ -1,16 +1,52 @@
 name := "strips2"
 
+val commonSettings = Seq(
+  organization := "com.github.mrmechko",
+  version := "0.0.2",
+  normalizedName ~= { _.replace("scala-js", "scalajs") },
+  homepage := Some(url("https://github.com/mrmechko/STripsLexicon")),
+  licenses += ("BSD 3-Clause", url("http://opensource.org/licenses/BSD-3-Clause")),
+  scmInfo := Some(ScmInfo(
+        url("https://github.com/mrmechko/STripsLexicon"),
+        "scm:git:git@github.com:mrmechko/STripsLexicon.git",
+        Some("scm:git:git@github.com:mrmechko/STripsLexicon.git"))),
+  publishMavenStyle := true,
+
+  publishTo := {
+    val nexus = "https://oss.sonatype.org/"
+    if (isSnapshot.value)
+      Some("snapshots" at nexus + "content/repositories/snapshots")
+    else
+      Some("releases" at nexus + "service/local/staging/deploy/maven2")
+  },
+
+  pomExtra := (
+  <developers>
+    <developer>
+      <id>mrmechko</id>
+      <name>Rik Bose</name>
+      <url>https://github.com/mrmechko/</url>
+    </developer>
+  </developers>
+  ),
+
+  pomIncludeRepository := { _ => false }
+
+
+)
+
 lazy val root = project.in(file(".")).
-  aggregate(stripsJS, stripsJVM).
+  settings(commonSettings: _*).
   settings(
     publish := {},
     publishLocal := {}
-  )
+  ).
+  aggregate(stripsJS, stripsJVM)
 
 lazy val strips = crossProject.in(file(".")).
+  settings(commonSettings: _*).
   settings(
     name := "strips2",
-    version := "0.0.2",
     scalaVersion := "2.11.6",
     libraryDependencies += "com.lihaoyi" %%% "upickle" % "0.3.4"
   ).
