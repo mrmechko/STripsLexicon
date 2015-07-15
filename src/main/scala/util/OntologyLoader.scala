@@ -36,7 +36,7 @@ object OntologyFromXML {
     (new File(directoryName)).listFiles.filter(f => f.isFile && f.getName.startsWith("ONT_")).map(_.getName)
   }
 
-  def apply(path : String) : List[Any]= {
+  def apply(path : String) : List[SOntItem]= {
     printf("loading from %s\n", path)
     getListOfWXML(path).map(file => {
       //println(path+file)
@@ -70,7 +70,7 @@ object OntologyFromXML {
     //arg
   }
 
-  def parseOnt(n : NodeSeq) : Any = {
+  def parseOnt(n : NodeSeq) : SOntItem = {
     val name : String @@ OntType = STags[OntType]((n \ "@name").text)
     //println(name)
     val parent : String @@ OntType = STags[OntType]((n \ "@parent").text)
@@ -83,7 +83,7 @@ object OntologyFromXML {
     val arguments = (n \\ "ARGUMENT").map(a => parseArg(a)).toList
     val ssem = parseSem(n \ "SEM")
 
-    val ont = sontitem(
+    sontitem(
       name,
       parent,
       children,
@@ -92,8 +92,5 @@ object OntologyFromXML {
       words,
       wn
     )
-    println(ont)
-    println("-")
-    ont
   }
 }
