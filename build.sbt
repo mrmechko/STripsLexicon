@@ -2,7 +2,6 @@ name := "strips2"
 
 val commonSettings = Seq(
   organization := "com.github.mrmechko",
-  version := "0.0.2",
   normalizedName ~= { _.replace("scala-js", "scalajs") },
   homepage := Some(url("https://github.com/mrmechko/STripsLexicon")),
   licenses += ("BSD 3-Clause", url("http://opensource.org/licenses/BSD-3-Clause")),
