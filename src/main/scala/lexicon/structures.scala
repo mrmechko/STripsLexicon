@@ -1,8 +1,5 @@
 package strips.lexicon
 
-import scalaz._
-import Scalaz._
-
 import upickle._
 
 
