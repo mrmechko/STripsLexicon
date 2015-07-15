@@ -1,11 +1,14 @@
-import strips.ontology._
-import strips.lexicon._
-
-
 object spurious extends App {
+  import strips.ontology._
   import strips.util.OntologyFromXML
 
   val ont = SOntology(OntologyFromXML("/Users/mechko/nlpTools/flaming-tyrion/lexicon/data/"))
+
+  import strips.lexicon._
+  import strips.util.LexiconFromXML
+
+  val lex = new TripsLexicon(LexiconFromXML("/Users/mechko/nlpTools/flaming-tyrion/lexicon/data/"))
+
 
   //println(ont.get("accept").get)
   //println((ont --> "accept").get)
@@ -21,10 +24,7 @@ object spurious extends App {
 
   println(ont.ontItems.map(_.name).map(name => ont.get(name).get.sem == ont.get2(name).get.sem))
 
-  import strips.util.LexiconFromXML
   import upickle.default._
-
-  val lex = new TripsLexicon(LexiconFromXML("/Users/mechko/nlpTools/flaming-tyrion/lexicon/data/"))
 
   lex.entries("break").foreach(x => {
     println("form: "+x._1)
