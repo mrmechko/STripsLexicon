@@ -10,7 +10,7 @@ lazy val root = project.in(file(".")).
 lazy val strips = crossProject.in(file(".")).
   settings(
     name := "strips2",
-    version := "0.1",
+    version := "0.0.2",
     scalaVersion := "2.11.6",
     libraryDependencies += "com.lihaoyi" %%% "upickle" % "0.3.4"
   ).
