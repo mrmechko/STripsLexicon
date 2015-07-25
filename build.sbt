@@ -47,7 +47,10 @@ lazy val strips = crossProject.in(file(".")).
   settings(
     name := "strips2",
     scalaVersion := "2.11.6",
-    libraryDependencies += "com.lihaoyi" %%% "upickle" % "0.3.4"
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "upickle" % "0.3.4",
+      "com.lihaoyi" %%% "scalatags" % "0.5.2"
+    )
   ).
   jvmSettings(
     // Add JVM-specific settings here

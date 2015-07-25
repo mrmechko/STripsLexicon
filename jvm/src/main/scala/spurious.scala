@@ -20,9 +20,9 @@ object spurious extends App {
   //println((ont v "children"))
   println("--")
   println(ont.get("bread").get.sem)
-  println(ont.get2("bread").get.sem)
+  println(ont.getMerged("bread").get.sem)
 
-  println(ont.ontItems.map(_.name).map(name => ont.get(name).get.sem == ont.get2(name).get.sem))
+  println(ont.ontItems.map(_.name).map(name => ont.get(name).get.sem == ont.getMerged(name).get.sem))
 
   import upickle.default._
 
