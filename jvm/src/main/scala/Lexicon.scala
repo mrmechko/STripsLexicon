@@ -24,4 +24,6 @@ class TripsLexicon(val words : List[STripsWord]) {
   def -->(word : String) : Set[STripsWord] = get(word)
 
   def !(word : String) : List[String] = (-->(word)).flatMap(_.classes.map(_.ontType)).toList
+
+  def getLexiconMappings(word : String) = this ! word
 }

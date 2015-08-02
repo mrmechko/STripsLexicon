@@ -44,8 +44,11 @@ case class SOntology(ontItems : List[SOntItem], versioned : Option[String] = Non
   def get(name : String) : Option[SOntItem] = index.get(name)
   def -->(name : String) = get(name)
 
+  def getWordNetSenseKeyMappings(wn : String) : List[String] = (this !# wn).map(_.name)
   def !#(wn : String) : List[SOntItem] = findSenseClasses(ss2head(wn)).keys.toList
   def !!#(wn : String) : List[(String, List[String])] = findSenseClasses(ss2head(wn)).map(x => x._1.name -> x._2).toList
+
+  def getWordNetWordMappings(word : String) : List[String] = (this !@ word).map(_.name)
 
   def !@(word : String) : List[SOntItem] = SWordNet.l2S(word).map(_.key).flatMap(t => !#(t)).distinct.toList
   def !!@(word: String) : List[(String, List[String])] = SWordNet.l2S(word).map(_.key).flatMap(t => !!#(t)).toList
@@ -84,6 +87,9 @@ case class SOntology(ontItems : List[SOntItem], versioned : Option[String] = Non
       List(p) ++ (this ^^ p)
     }
   }
+  def pathToRoot(name : String) : List[String] = this ^^ name
+  def pathToRoot(names : List[String]) : Map[String, List[String]] = names.map(name => name -> (this ^^ name)).toMap
+  
 
   def children(name : String) : List[SOntItem] = down.getOrElse(name, List())
   def v(name : String) = children(name)
