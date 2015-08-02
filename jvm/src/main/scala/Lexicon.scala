@@ -15,7 +15,13 @@ class TripsLexicon(val words : List[STripsWord]) {
     entries(word).values.flatMap(x => x.map(_.word)).toSet
   }
 
+  def %(word : String) : Set[String] = morphs(word)
+
   def get(word : String) : Set[STripsWord] = {
     morphs(word).flatMap(wordIndex(_))
   }
+
+  def -->(word : String) : Set[STripsWord] = get(word)
+
+  def !(word : String) : List[String] = (-->(word)).flatMap(_.classes.map(_.ontType)).toList
 }
