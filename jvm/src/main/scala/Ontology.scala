@@ -4,6 +4,13 @@ import com.github.mrmechko.swordnet.SWordNet
 import com.github.mrmechko.swordnet.structures.{SRelationType, SKey, SPos}
 
 //JVM only -- Is case class for serialization purposes
+//The contents of this class should be abstracted into a trait
+//The concrete case class will exist for loading from a list of data
+//Alternative loaders, including the ondisk loader which parses the xml each time
+//And the db loader which makes a query to the database for each operation can also
+//extend the trait with the accessor methods.  Ideally, we split this into two different
+//traits, one being the accessor and the other being the operator.
+
 case class SOntology(ontItems : List[SOntItem], versioned : Option[String] = None) {
   private def ss2head(s : String) : String = SKey(s).synset.head.key
 
@@ -89,7 +96,7 @@ case class SOntology(ontItems : List[SOntItem], versioned : Option[String] = Non
   }
   def pathToRoot(name : String) : List[String] = this ^^ name
   def pathToRoot(names : List[String]) : Map[String, List[String]] = names.map(name => name -> (this ^^ name)).toMap
-  
+
 
   def children(name : String) : List[SOntItem] = down.getOrElse(name, List())
   def v(name : String) = children(name)
