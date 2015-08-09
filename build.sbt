@@ -2,7 +2,6 @@ name := "strips2"
 
 val commonSettings = Seq(
   organization := "com.github.mrmechko",
-  version := "0.0.2",
   normalizedName ~= { _.replace("scala-js", "scalajs") },
   homepage := Some(url("https://github.com/mrmechko/STripsLexicon")),
   licenses += ("BSD 3-Clause", url("http://opensource.org/licenses/BSD-3-Clause")),
@@ -46,12 +45,17 @@ lazy val root = project.in(file(".")).
 lazy val strips = crossProject.in(file(".")).
   settings(commonSettings: _*).
   settings(
+    version := "0.0.3",
     name := "strips2",
     scalaVersion := "2.11.6",
-    libraryDependencies += "com.lihaoyi" %%% "upickle" % "0.3.4"
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "upickle" % "0.3.4",
+      "com.lihaoyi" %%% "scalatags" % "0.5.2"
+    )
   ).
   jvmSettings(
     // Add JVM-specific settings here
+    version := "0.0.3",
     libraryDependencies ++= Seq(
       "com.github.mrmechko" %% "swordnet" % "2.0-SNAPSHOT",
       "org.scalaz" %% "scalaz-core" % "7.1.3",

@@ -7,7 +7,7 @@ object spurious extends App {
   import strips.lexicon._
   import strips.util.LexiconFromXML
 
-  val lex = new TripsLexicon(LexiconFromXML("/Users/mechko/nlpTools/flaming-tyrion/lexicon/data/"))
+  val lex = TripsLexicon(LexiconFromXML("/Users/mechko/nlpTools/flaming-tyrion/lexicon/data/"))
 
 
   //println(ont.get("accept").get)
@@ -20,9 +20,9 @@ object spurious extends App {
   //println((ont v "children"))
   println("--")
   println(ont.get("bread").get.sem)
-  println(ont.get2("bread").get.sem)
+  println(ont.getMerged("bread").get.sem)
 
-  println(ont.ontItems.map(_.name).map(name => ont.get(name).get.sem == ont.get2(name).get.sem))
+  println(ont.ontItems.map(_.name).map(name => ont.get(name).get.sem == ont.getMerged(name).get.sem))
 
   import upickle.default._
 
@@ -38,10 +38,10 @@ object spurious extends App {
 
   println(lex.get("broken"))
 
-  val pickled = write(lex.words)
-  val unpickled = read[List[STripsWord]](pickled)
 
-  val nlex = new TripsLexicon(unpickled)
+  //val unpickled = read[List[STripsWord]](pickled)
+  val pickled = write(lex.words)
+  val nlex = new TripsLexicon(read[List[STripsWord]](pickled))
 
   println(nlex.morphs("break"))
   println(nlex.morphs("breaking"))

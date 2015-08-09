@@ -1,5 +1,8 @@
 package strips.ontology
 
+import scalatags.Text.all._
+import strips.pp._
+
 case class SArgument(role : String, optional : Boolean, fltype : String, features : SFeatureSet)
 
 case class SSem(fltype : String, features : SFeatureSet) {

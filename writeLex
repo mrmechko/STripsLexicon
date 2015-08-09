@@ -1,0 +1,47 @@
+#!/usr/bin/env /Users/mechko/bin/scalas
+
+/***
+scalaVersion := "2.11.7"
+
+resolvers += Resolver.sonatypeRepo("snapshots") 
+
+libraryDependencies += "com.github.mrmechko" %% "strips2" % "0.0.1-SNAPSHOT"
+
+libraryDependencies += "com.github.mrmechko" %% "swordnet" % "2.0-SNAPSHOT"
+*/
+
+import strips.lexicon._
+import strips.util.LexiconFromXML
+
+val margs = args.grouped(2).map(s => s(0).stripPrefix("-")->s(1)).toMap
+
+val lexPath = margs.getOrElse("lexicon", sys.env("lexiconXML"))
+val lex = TripsLexicon(LexiconFromXML(lexPath))
+
+import strips.ontology._
+import strips.util.OntologyFromXML
+
+val ont = SOntology(OntologyFromXML(lexPath))
+
+import java.io._
+
+val outputPath = margs.getOrElse("output", sys.env("tripsUpdater")) + "/examples/ont/"
+
+import com.github.mrmechko.swordnet.structures.SKey
+
+lex.words.flatMap(x => x.classes.map(y => y.ontType -> y.frames.map(_.example))).filter(y => {y._2.mkString != ""}).groupBy(_._1).mapValues(x => x.map(_._2).flatten.filter(_ != "")).foreach(x => {
+    val pw = new PrintWriter(new File(outputPath+x._1+".md"))
+    pw.write(x._2.mkString("*Lexicon examples*\n> ", "\n\n> ", "\n\n"))
+
+   (ont --> x._1) match {
+	   case Some(o) => pw.write(o.wn.map(w => {
+		   "\n**%s**\n%s".format(w,SKey.get(w).map(d => "> "+d.definition).getOrElse(""))}).mkString("\n\n")
+	   )
+	   case _ =>
+   }
+
+    pw.flush
+    pw.close
+  })
+
+
