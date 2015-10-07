@@ -45,9 +45,9 @@ lazy val root = project.in(file(".")).
 lazy val strips = crossProject.in(file(".")).
   settings(commonSettings: _*).
   settings(
-    version := "0.0.3",
+    version := "0.0.3a",
     name := "strips2",
-    scalaVersion := "2.11.6",
+    scalaVersion := "2.11.7",
     libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "upickle" % "0.3.4",
       "com.lihaoyi" %%% "scalatags" % "0.5.2"
@@ -55,10 +55,9 @@ lazy val strips = crossProject.in(file(".")).
   ).
   jvmSettings(
     // Add JVM-specific settings here
-    version := "0.0.3",
     libraryDependencies ++= Seq(
-      "com.github.mrmechko" %% "swordnet" % "2.0-SNAPSHOT",
-      "org.scalaz" %% "scalaz-core" % "7.1.3",
+      "com.github.mrmechko" %% "swordnet" % "2.0.0",
+      "org.scalaz" %% "scalaz-core" % "7.1.3", //Why is this here. Am I using it somewhere or was it a plan that fell through
       "org.scala-lang.modules" %% "scala-xml" % "1.0.3"
     )
   ).
