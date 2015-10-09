@@ -1,7 +1,6 @@
 package strips.ontology
 
-import com.github.mrmechko.swordnet.SWordNet
-import com.github.mrmechko.swordnet.structures.{SRelationType, SKey, SPos}
+import wn._
 
 //JVM only -- Is case class for serialization purposes
 //The contents of this class should be abstracted into a trait
@@ -12,12 +11,15 @@ import com.github.mrmechko.swordnet.structures.{SRelationType, SKey, SPos}
 //traits, one being the accessor and the other being the operator.
 
 case class SOntology(ontItems : List[SOntItem], versioned : Option[String] = None) {
-  private def ss2head(s : String) : String = SKey(s).synset.head.key
+  private def ss2head(s : String) : String = bottle.key(s) match {
+    case r : bottle.Synset => r.canonical
+    case _ => ""
+  }
 
   private def testWN(s : String) : Option[String] = {
-    SKey.get(s) match {
-      case Some(k) => Some(k.synset.head.key)
-      case None => {
+    bottle.key(s) match {
+      case k : bottle.Synset => Some(k.canonical)
+      case _ => {
         val r = s.replaceAll("%5", "%3")
         if (r != s){
           println("not found: %s.  Trying: %s".format(s, r))
@@ -57,10 +59,18 @@ case class SOntology(ontItems : List[SOntItem], versioned : Option[String] = Non
 
   def getWordNetWordMappings(word : String) : List[String] = (this !@ word).map(_.name)
 
-  def !@(word : String) : List[SOntItem] = SWordNet.l2S(word).map(_.key).flatMap(t => !#(t)).distinct.toList
-  def !!@(word: String) : List[(String, List[String])] = SWordNet.l2S(word).map(_.key).flatMap(t => !!#(t)).toList
+  //Need to check error cases
+  def !@(word : String) : List[SOntItem] = bottle.lemma(word) match {
+    case w : bottle.WordList => w.synsets.map(_.canonical).flatMap(t => !#(t)).distinct.toList
+    case _ => List()
+  }
+  def !!@(word: String) : List[(String, List[String])] = bottle.lemma(word) match {
+    case w : bottle.WordList => w.synsets.map(_.canonical).flatMap(t => !!#(t)).toList
+    case _ => List()
+  }
 
 
+  //can call the hypernym thingy from Synset directly
   //TODO: For each element on the path-list, if there is another path which is a suffix of it, drop this path
   def findSenseClasses(sense : String, ignore : List[String] = List()) : Map[SOntItem, List[String]] = {
     if(ignore.contains(ss2head(sense))) Map()
@@ -68,7 +78,10 @@ case class SOntology(ontItems : List[SOntItem], versioned : Option[String] = Non
       wordnet.get(ss2head(sense)) match {
         case Some(x) => x.map(_ -> ignore.+:(ss2head(sense))).toMap
         case None => {
-          SKey(ss2head(sense)).hasSemantic(SRelationType.hypernym).flatMap(_.keys).distinct.flatMap(k => findSenseClasses(ss2head(k.key), ignore.+:(ss2head(sense)))).distinct.toList.toMap
+          bottle.key(ss2head(sense)) match {
+            case s : bottle.Synset => s.hypernyms.flatMap(k => findSenseClasses(ss2head(k), ignore.+:(ss2head(sense)))).distinct.toList.toMap
+            case _ => Map[SOntItem, List[String]]()
+          }
         }
       }
     }

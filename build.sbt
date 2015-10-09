@@ -45,7 +45,7 @@ lazy val root = project.in(file(".")).
 lazy val strips = crossProject.in(file(".")).
   settings(commonSettings: _*).
   settings(
-    version := "0.0.3a",
+    version := "0.0.4b",
     name := "strips2",
     scalaVersion := "2.11.7",
     libraryDependencies ++= Seq(
@@ -56,7 +56,6 @@ lazy val strips = crossProject.in(file(".")).
   jvmSettings(
     // Add JVM-specific settings here
     libraryDependencies ++= Seq(
-      "com.github.mrmechko" %% "swordnet" % "2.0.0",
       "org.scalaz" %% "scalaz-core" % "7.1.3", //Why is this here. Am I using it somewhere or was it a plan that fell through
       "org.scala-lang.modules" %% "scala-xml" % "1.0.3"
     )
