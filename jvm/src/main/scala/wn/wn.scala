@@ -41,10 +41,7 @@ object bottle {
       case Some(l) => l
       case None => {
         val res = read[WordNetResponse](scala.io.Source.fromURL("http://localhost:5000/word?query=%s".format(lem)).mkString)
-        res match {
-          case s : WordList => Caches.lemmas = Caches.lemmas.updated(lem, res)
-          case _ => 
-        }
+        Caches.lemmas = Caches.lemmas.updated(lem, res)
         res
       }
     }
@@ -55,10 +52,7 @@ object bottle {
       case Some(l) => l
       case None => {
         val res = read[WordNetResponse](scala.io.Source.fromURL("http://localhost:5000/key?query=%s".format(k)).mkString)
-        res match {
-          case s : Synset => Caches.keys = Caches.keys.updated(k, res)
-          case _ => 
-        }
+        Caches.keys = Caches.keys.updated(k, res)
         res
       }
     }
