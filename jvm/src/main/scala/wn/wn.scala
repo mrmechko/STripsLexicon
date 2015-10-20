@@ -3,13 +3,30 @@ package wn
 object bottle {
 
   import upickle.default._
+  import io.Source._
 
   private object Caches {
     var lemmas = Map[String, WordNetResponse]()
     var keys = Map[String, WordNetResponse]()
+    var heads = {
+
+      fromInputStream(getClass.getResourceAsStream("/heads")).mkString.split("\n").flatMap(k=>{
+        val line = k.split(" ").toList
+        line.map(s => s -> line.head)
+      })
+    }.toMap
+
+    var hypernyms = {
+      fromInputStream(getClass.getResourceAsStream("/hypernyms")).mkString.split("\n").flatMap(k=>{
+        val line = k.split(" ").toList
+        line.map(s => line.head -> line.tail)
+      })
+    }.toMap
   }
 
   sealed trait WordNetResponse
+
+  case class SimpleKey(key : String, hypernyms : List[String]) extends WordNetResponse
 
   case class SingleKey(
     key : String,
@@ -55,6 +72,13 @@ object bottle {
         Caches.keys = Caches.keys.updated(k, res)
         res
       }
+    }
+  }
+
+  def simpleKey(k : String) : WordNetResponse = {
+    Caches.heads.get(k) match {
+      case Some(l) => SimpleKey(l, Caches.hypernyms.getOrElse(l, List()))
+      case None => WNError("%s not found".format(k))
     }
   }
 

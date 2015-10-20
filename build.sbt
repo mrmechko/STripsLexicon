@@ -45,7 +45,7 @@ lazy val root = project.in(file(".")).
 lazy val strips = crossProject.in(file(".")).
   settings(commonSettings: _*).
   settings(
-    version := "0.0.4c",
+    version := "0.0.4d",
     name := "strips2",
     scalaVersion := "2.11.7",
     libraryDependencies ++= Seq(

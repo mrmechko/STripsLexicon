@@ -11,14 +11,14 @@ import wn._
 //traits, one being the accessor and the other being the operator.
 
 case class SOntology(ontItems : List[SOntItem], versioned : Option[String] = None) {
-  private def ss2head(s : String) : String = bottle.key(s) match {
-    case r : bottle.Synset => r.canonical
+  private def ss2head(s : String) : String = bottle.simpleKey(s) match {
+    case r : bottle.SimpleKey => r.key
     case _ => ""
   }
 
   private def testWN(s : String) : Option[String] = {
-    bottle.key(s) match {
-      case k : bottle.Synset => Some(k.canonical)
+    bottle.simpleKey(s) match {
+      case k : bottle.SimpleKey => Some(k.key)
       case _ => {
         val r = s.replaceAll("%5", "%3")
         if (r != s){
@@ -78,8 +78,8 @@ case class SOntology(ontItems : List[SOntItem], versioned : Option[String] = Non
       wordnet.get(ss2head(sense)) match {
         case Some(x) => x.map(_ -> ignore.+:(ss2head(sense))).toMap
         case None => {
-          bottle.key(ss2head(sense)) match {
-            case s : bottle.Synset => s.hypernyms.flatMap(k => findSenseClasses(ss2head(k), ignore.+:(ss2head(sense)))).distinct.toList.toMap
+          bottle.simpleKey(ss2head(sense)) match {
+            case s : bottle.SimpleKey => s.hypernyms.flatMap(k => findSenseClasses(ss2head(k), ignore.+:(ss2head(sense)))).distinct.toList.toMap
             case _ => Map[SOntItem, List[String]]()
           }
         }
